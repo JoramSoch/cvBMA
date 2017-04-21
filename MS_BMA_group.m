@@ -11,17 +11,16 @@ function MS_BMA_group(matlabbatch, params, method) % Release cvBMA
 % the method indicated by method with parameters of interest indexed by
 % params.
 % 
-% The input variable "method" is a string containing up to six letters:
+% The input variable "method" is a string containing up to five letters:
 %     If it contains 'b', then the best model's parameters are extracted.
 %     If it contains 'm', then the median model's parameters are extracted.
 %     If it contains 'w', then the worst model's parameters are extracted.
 %     If it contains 'r', then a random model's parameters are extracted.
 %     If it contains 'a', then the averaged model parameters are estimated.
-%     If it contains 's', then the session-wise parameters are summed up.
 % 
 % The input variable "params" can be an M x P matrix indexing parameters of
 % interest for all models separately or a 1 x P vector if parameter indices
-% are the same for all models.
+% are the same for all models, where P is the number of parameters.
 % 
 % Further information:
 %     help MS_BMA_subject
@@ -30,7 +29,7 @@ function MS_BMA_group(matlabbatch, params, method) % Release cvBMA
 % E-Mail: joram.soch@bccn-berlin.de
 % 
 % First edit: 03/03/2016, 18:35 (V0.4/V13)
-%  Last edit: 24/02/2017, 04:25 (V0.9b/V13b)
+%  Last edit: 11/04/2017, 12:15 (V0.9b/V13b) [retro-spective edit]
 
 
 %=========================================================================%
@@ -61,7 +60,7 @@ if nargin < 2 || isempty(params), params = spm_input('parameter indices:',1,'r',
 
 % Set analysis method if necessary
 %-------------------------------------------------------------------------%
-if nargin < 3 || isempty(method), method = 'as'; end;
+if nargin < 3 || isempty(method), method = 'ba'; end;
 
 
 %=========================================================================%
@@ -72,17 +71,15 @@ if nargin < 3 || isempty(method), method = 'as'; end;
 %-------------------------------------------------------------------------%
 I.sess_map = matlabbatch{1}.spm.stats.bms_map.inference.sess_map;
 N = length(I.sess_map);                     % number of subjects
-S = length(I.sess_map{1});                  % number of sessions
+S = length(I.sess_map{1}); % = 1;           % number of sessions
 M = length(I.sess_map{1}(1).mod_map);       % number of models
 
 % Get log model evidence maps
 %-------------------------------------------------------------------------%
-LMEs = cell(M,S,N);
+LMEs = cell(N,M);
 for i = 1:N
     for j = 1:M
-        for k = 1:S
-            LMEs{j,k,i} = I.sess_map{i}(k).mod_map{j};
-        end;
+        LMEs{i,j} = I.sess_map{i}(1).mod_map{j};
     end;
 end;
 
@@ -90,7 +87,7 @@ end;
 %-------------------------------------------------------------------------%
 BMA_dirs = cell(N,1);
 for i = 1:N
-    GLM1_dir = fileparts(LMEs{1,1,i});
+    GLM1_dir = fileparts(LMEs{i,1});
     cd(strcat(GLM1_dir,'/../'));
     GLMs_dir = pwd;
     BMA_dirs{i,1} = strcat(GLMs_dir,'/','MS_BMA_subject','_',method);
@@ -102,7 +99,7 @@ cd(orig_dir);
 fprintf('\n');
 for i = 1:N
     fprintf('-> Bayesian model averaging for Subject %d out of %d using Method "%s"... ', i, N, method);
-    MS_BMA_subject(LMEs(:,:,i), params, method, BMA_dirs{i})
+    MS_BMA_subject(LMEs(i,:)', params, method, BMA_dirs{i})
     fprintf('succesful!\n');
 end;
 fprintf('\n');

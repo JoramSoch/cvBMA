@@ -6,7 +6,7 @@
 % 
 % Author: Joram Soch, BCCN Berlin
 % E-Mail: joram.soch@bccn-berlin.de
-% Date  : 24/02/2017, 11:00
+% Date  : 21/04/2017, 15:20
 
 
 %%% Step 0: Study parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -82,19 +82,11 @@ end;
 BMA_dir = strcat(stat_dir,'/','model_averaging','/',ms_name,'_',int2str(M),'mods','_',int2str(N),'subj','_',ms_suff,'/');
 clear sess_map
 for i = 1:N                     % all subjects
-    % clear sess_map
-    for k = 1:S                 % all sessions
-        clear mod_map
-        for j = 1:M             % all models
-            if S == 1
-                mod_map{j,1} = strcat(work_dir,'/',subj_ids{i},'/',mod_nams{j},'/',LME_map,'.nii');
-            end;
-            if S > 1
-                mod_map{j,1} = strcat(work_dir,'/',subj_ids{i},'/',mod_nams{j},'/',LME_map,'_S',int2str(k),'.nii');
-            end;
-        end;
-        sess_map{i}(k).mod_map = mod_map;
+    clear mod_map
+    for j = 1:M                 % all models
+        mod_map{j,1} = strcat(work_dir,'/',subj_ids{i},'/',mod_nams{j},'/',LME_map,'.nii');
     end;
+    sess_map{i}(k).mod_map = mod_map;
 end;
 
 % create SPM batch
@@ -113,12 +105,12 @@ save(filename,'matlabbatch');
 % load SPM batch
 load(strcat(BMA_dir,'design.mat'));
 params = para_mat;
-method = 'as';
+method = 'ba';
 
 % perform SPM batch
 MS_BMA_group(matlabbatch,para_mat,method);
 BMA_dir = strcat('MS_BMA_subject_',method);
-% Note: MS_BMA_group(matlabbatch,para_mat,'bmwras') invokes additional
+% Note: MS_BMA_group(matlabbatch,para_mat,'bmwra') invokes additional
 % calculation of best/median/worst/random model's parameter estimates.
 
 
@@ -129,7 +121,7 @@ fprintf('\n\n');
 fprintf('Use these beta image pathes for second-level analyses:\n');
 
 % display beta image pathes
-for i = 1:P
+for k = 1:P
     fprintf('\n\n');
     for i = 1:N
         subj_dir = strcat(work_dir,'/',subj_ids{i},'/',BMA_dir);

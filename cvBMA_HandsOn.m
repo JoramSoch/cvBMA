@@ -6,7 +6,7 @@
 % 
 % Author: Joram Soch, BCCN Berlin
 % E-Mail: joram.soch@bccn-berlin.de
-% Date  : 24/02/2017, 08:35
+% Date  : 21/04/2017, 15:15
 
 
 %%% Step 0: Pre-processing and model estimation %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -39,7 +39,7 @@ MA_cvLME_single(SPM)
 params = [1, 4, 7, 10; 1, 2, 5, 6];
 load(strcat(DIR,'/BMA_design.mat'));
 MS_BMA_group(matlabbatch,params)
-% Note: MS_BMA_group(matlabbatch,params,'bmwras') invokes additional
+% Note: MS_BMA_group(matlabbatch,params,'bmwra') invokes additional
 % calculation of best/median/worst/random model's parameter estimates.
 
 
@@ -52,8 +52,8 @@ spm_jobman('run',filename);
 % Prepare visualization
 xVis.data     = {strcat(DIR,'/classical_categorical/beta_0001.img');
                  strcat(DIR,'/classical_parametric/beta_0001.img');
-                 strcat(DIR,'/MS_BMA_subject_as/beta_0001_BMA.nii')};
-xVis.overlay  = {strcat(DIR,'/MS_BMA_subject_as/beta_0001_diff.nii')};
+                 strcat(DIR,'/MS_BMA_subject_ba/beta_0001_BMA.nii')};
+xVis.overlay  = {strcat(DIR,'/MS_BMA_subject_ba/beta_0001_diff.nii')};
 xVis.thresh   = '>1';
 xVis.PlotType = 'bar';
 xVis.LineSpec = 'b';
