@@ -77,7 +77,7 @@ P = size(para,2);               % number of parameters
 
 % Get image dimensions
 %-------------------------------------------------------------------------%
-H = spm_vol(LMEs{1});         % LME image header
+H = spm_vol(LMEs{1});           % LME image header
 V = prod(H.dim);                % number of voxels
 
 % Expand parameters if necessary
